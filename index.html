@@ -2,7 +2,7 @@
 <html data-ng-app="app">
 <head>
   <meta charset=utf-8 />
-  <title>MusicBox</title>
+  <title>Ephob</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- build:css css/musicbox.css -->
   <link rel="stylesheet" href="css/pure-min.css">
@@ -13,7 +13,7 @@
 <body data-ng-controller="MainCtrl">
   <div class="main">
     <header data-ng-class="{'logged-in': dropbox.isLoggedIn()}">
-      <h1>MusicBox</h1>
+      <h1>Ephob</h1>
       <form class="pure-form search-form" data-ng-submit="search()">
         <input class="search-box" type="text" placeholder="Search music..." data-ng-model="query" data-ng-trim="false" />
       </form>
@@ -34,16 +34,13 @@
         <li><a href="#/albums">Albums</a></li>
         <li><a href="#/songs">Songs</a></li>
         <li><a href="#/genres">Genres</a></li>
-        <li><span class="pure-menu-heading">Playlists</span></li>
-        <li data-ng-repeat="playlist in playlists"><a href="#/playlist/{{playlist.get('name')}}">{{playlist.get('name')}}</a></li>
       </ul>
     </nav>
 
     <div data-ng-view class="content">
       <div class="login">
         <img src="img/logo.png" />
-        <div class="title">MusicBox</div>
-        <div class="subtitle">Play tunes from your Dropbox, with Music Library support.</div>
+        <div class="title">Ephob</div>
         <button class="pure-button ng-cloak" data-ng-click="login()">Login to Dropbox</button>
         <p data-ng-show="msg" class="ng-cloak">{{msg}}</p>
       </div>
@@ -75,7 +72,7 @@
         </div>
         <div data-col="artist" title="{{song.get('artist')}}"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></div>
       </div>
-      <a href="http://venkatagiri.me" target="_blank" class="author">built by <span>venkatagiri</span></a>
+
     </div>
   </div>
 
@@ -103,7 +100,7 @@
         <tr data-ng-repeat="song in (filteredSongs = (songs | orderObjectBy:predicate)) track by $index" data-ng-dblclick="play(filteredSongs, $index)">
           <td data-col="name">
             <span>{{song.get("name")}}<span>
-            <span data-ng-include="'song-menu'"></span>
+            <span data-ng-click='download(song)'><img class="song-download" src="img/download.png"/></span>
           </td>
           <td data-col="artist"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></td>
           <td data-col="album"><a href="#/artist/{{song.get('artist')}}/album/{{song.get('album')}}">{{song.get("album")}}</a></td>
@@ -188,7 +185,6 @@
     <h2>
       <span>{{name}}</span>
       <a class="action" data-ng-click="addToQueue(songs)" data-ng-show="songs.length && name!='Queue'">+ Add to Queue</a>
-      <a class="action" data-ng-click="clear()" data-ng-show="songs.length">- Clear Playlist</a>
       <a class="action" data-ng-click="deletePlaylist()" data-ng-show="name!='Queue'">x Remove Playlist</a>
     </h2>
     <p data-ng-show="!songs.length">Playlist is currently empty!</p>
@@ -206,7 +202,7 @@
             data-ng-class="{selected: name=='Queue' && $index==nowPlaying}">
           <td data-col="name">
             <span>{{song.get("name")}}<span>
-            <span data-ng-include="'song-menu'"></span>
+            <span data-ng-click='download(song)'><img class="song-download" src="img/download.png"/></span>
           </td>
           <td data-col="artist"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></td>
           <td data-col="album"><a href="#/artist/{{song.get('artist')}}/album/{{song.get('album')}}">{{song.get("album")}}</a></td>
@@ -247,8 +243,7 @@
   <script type="text/ng-template" id="login">
     <div class="login">
       <img src="img/logo.png" />
-      <div class="title">MusicBox</div>
-      <div class="subtitle">Play tunes from your Dropbox, with Music Library support.</div>
+      <div class="title">Ephob</div>
       <button class="pure-button" data-ng-click="login()">Login to Dropbox</button>
       <p data-ng-show="msg">{{msg}}</p>
     </div>
@@ -298,7 +293,7 @@
 
   <!-- build:js js/musicbox.js -->
   <script src="js/lib/angular.min.js"></script>
-  <script src="js/lib/dropbox-datastores-0.1.0-b6.js"></script>
+  <script src="js/lib/dropbox-datastores-1.2.0.js"></script>
   <script src="js/lib/lastfm.min.js"></script>
   <script src="js/lib/id3.min.js"></script>
   <script src="js/routes.js"></script>

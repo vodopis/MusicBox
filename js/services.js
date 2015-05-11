@@ -4,18 +4,8 @@ angular
 // Google Analytics
 .run(['$window','$location','$rootScope', function($window, $location, $rootScope) {
 
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })($window,$window.document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  $window.ga('create', 'UA-8949267-5', 'venkatagiri.me');
-
   $rootScope.$on('$routeChangeSuccess', function() {
-    $window.ga('send', 'pageview', {
-      location: $location.absUrl(),
-      page: '/MusicBox' + $location.url()
-    });
+
   });
 }])
 
@@ -260,6 +250,7 @@ angular
           if(song && song.get("version") === file.versionTag) return; // If song version has not changed, don't index it again.
 
           changed++;
+          console.log("file path: " + file.path);
           dropbox.getUrl(file.path, function(error, details) {
             if(error) {
               console.error(error);
@@ -306,11 +297,11 @@ angular
 
 // Dropbox Service
 .service("dropbox", ["$rootScope", "$q", "store", function($rootScope, $q, store) {
-  var client = new Dropbox.Client({ key: "rkii6jl2u8un1xc" }),
+  var client = new Dropbox.Client({ key: "4truhcywbbbxtul" }),
     deferredDatastore = $q.defer();
 
   client.authDriver(new Dropbox.AuthDriver.Popup({
-    receiverUrl: location.origin.replace(/^http/, "https") + location.pathname + "dropbox_receiver.html"
+    receiverUrl: location.origin + location.pathname + "dropbox_receiver.html"
   }));
   client.authenticate({interactive: false}, function() {
     if(!client.isAuthenticated()) return;

@@ -149,6 +149,8 @@ h3 {
   padding: 20px;
   overflow: auto;
   z-index: 99;
+  -webkit-transform: translate3d(0,0,0);
+
 }
 
 .login {
@@ -327,6 +329,10 @@ h3 {
 }
 .songs-list tbody tr:hover .song-menu {
   display: inline;
+}
+
+.song-download {
+  vertical-align: middle;
 }
 .song-menu-item {
   position: relative;

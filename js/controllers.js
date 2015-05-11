@@ -311,12 +311,38 @@ angular
 }])
 
 // Songs
-.controller("SongsCtrl", ["$scope", "$window", "queue", "library", "notification",
-    function($scope, $window, queue, library, notification) {
+.controller("SongsCtrl", ["$scope", "$http", "$window", "queue", "library", "notification",
+    function($scope, $http, $window, queue, library, notification) {
   $scope.predicate = "name"; // By default, sort by name.
   $scope.play = function(songs, index) {
     queue.clear();
     queue.add(songs, index);
+  };
+
+  $scope.download = function(song) {
+      console.log("downloading: " + song.get("path") );
+      for (var key in localStorage){
+        if (key.indexOf("dropbox-auth") === 0) {
+          var auth = JSON.parse(localStorage[key]);
+          var token=auth.token;
+        }
+      }
+
+    if (auth.token) {
+      $http({
+        method: 'POST',
+        url: 'https://api.dropbox.com/1/media/auto/' + song.get('path'),
+        headers: {'Authorization': 'Bearer ' + auth.token}
+      }).
+          success(function (data, status, headers, config) {
+            location.href = data.url + "?dl=1";
+
+          }).
+          error(function (data, status, headers, config) {
+            console.log("failed to get download url");
+          });
+    }
+
   };
   $scope.addToPlaylist = function(playlist, song) {
     var playlistName;
