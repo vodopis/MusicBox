@@ -90,9 +90,13 @@
             <span class="marker" data-ng-show="predicate=='artist'">▼</span>
             <span>Artist</span>
           </td>
-          <td data-col="album" data-ng-click="predicate='album'" data-ng-class="{selected: predicate=='album'}">
-            <span class="marker" data-ng-show="predicate=='album'">▼</span>
-            <span>Album</span>
+          <td data-col="size" data-ng-click="predicate='size'" data-ng-class="{selected: predicate=='size'}">
+            <span class="marker" data-ng-show="predicate=='size'">▼</span>
+            <span>Size</span>
+          </td>
+          <td data-col="modifiedMillis" data-ng-click="predicate='modifiedMillis'" data-ng-class="{selected: predicate=='modifiedMillis'}">
+            <span class="marker" data-ng-show="predicate=='modifiedMillis'">▼</span>
+            <span>Uploaded</span>
           </td>
         </tr>
       </thead>
@@ -103,7 +107,8 @@
             <span data-ng-click='download(song)'><img class="song-download" src="img/download.png"/></span>
           </td>
           <td data-col="artist"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></td>
-          <td data-col="album"><a href="#/artist/{{song.get('artist')}}/album/{{song.get('album')}}">{{song.get("album")}}</a></td>
+          <td data-col="size">{{song.get("humanSize")}}</td>
+          <td data-col="modifiedMillis">{{song.get("modifiedDisplay")}}</td>
         </tr>
       </tbody>
     </table>
@@ -296,6 +301,7 @@
   <script src="js/lib/dropbox-datastores-1.2.0.js"></script>
   <script src="js/lib/lastfm.min.js"></script>
   <script src="js/lib/id3.min.js"></script>
+  <script src="js/lib/moment.js"></script>
   <script src="js/routes.js"></script>
   <script src="js/directives.js"></script>
   <script src="js/filters.js"></script>

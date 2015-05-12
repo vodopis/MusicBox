@@ -148,8 +148,7 @@ h3 {
   right: 0;
   padding: 20px;
   overflow: auto;
-  z-index: 99;
-  -webkit-transform: translate3d(0,0,0);
+  z-index: -1;
 
 }
 
@@ -159,11 +158,16 @@ h3 {
   right: 0;
   bottom: 0;
   top: 0;
+  width: 100%;
+  height: 100%;
   padding-top: 60px;
   background: #e62020;
   text-align: center;
   color: #fff;
-  z-index: 9999;
+  z-index: 999999;
+  -webkit-overflow-scrolling: auto;
+  -webkit-transform: translate3d(0,0,0);
+
 }
 .login button {
   color: #e62020;

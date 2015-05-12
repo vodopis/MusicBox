@@ -75,15 +75,35 @@ angular
       tags.album = tags.album || "Unknown Album";
       tags.artist = tags.artist || "Unknown Artist";
       tags.genre = tags.genre || "Unknown Genre";
-
+      var image = tags.picture;
+      if (image) {
+        var base64String = "";
+        for (var i = 0; i < image.data.length; i++) {
+          base64String += String.fromCharCode(image.data[i]);
+        }
+        var base64 = "data:" + image.format + ";base64," + window.btoa(base64String);
+        console.log("base64: " +base64);
+      }
+      else {
+        console.log("No image found");
+      }
       // Songs
+      var modifiedMillis = Date.parse(file.modifiedAt);
+      var modifiedDate = new Date(modifiedMillis);
+      var modifiedDisplay = moment(modifiedDate).format('YYYY-MM-DD');
+      console.log("modified: " + modifiedMillis + ", string: " + modifiedDisplay);
+
       var song = songs.insert({
         name: tags.title,
         album: tags.album,
         artist: tags.artist,
         genre: tags.genre,
         path: file.path,
-        version: file.versionTag
+        version: file.versionTag,
+        modifiedMillis: modifiedMillis,
+        modifiedDisplay: modifiedDisplay,
+        humanSize: file.humanSize,
+        size: file.size
       });
 
       // Albums
@@ -146,6 +166,7 @@ angular
     if(playlists.query().length === 0) playlists.insert({name: "Queue", songIds: []}); // If Queue playlist doesn't exist on first login, create it.
     $rootScope.$broadcast("datastore.loaded");
     deferred.resolve();
+
   });
 
   var deferred = $q.defer();
@@ -273,6 +294,7 @@ angular
           isScanning = false;
           cleanup(files);
         }
+
       });
     },
     reset: function(callback) {
