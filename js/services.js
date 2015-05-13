@@ -103,7 +103,8 @@ angular
         modifiedMillis: modifiedMillis,
         modifiedDisplay: modifiedDisplay,
         humanSize: file.humanSize,
-        size: file.size
+        size: file.size,
+        userRating: 4.5
       });
 
       // Albums

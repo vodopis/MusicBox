@@ -77,7 +77,7 @@
   </div>
 
   <script type="text/ng-template" id="songs/list">
-    <h2 data-ng-show="!hideHeading">Songs</h2>
+    <!--<h2 data-ng-show="!hideHeading">Songs</h2>-->
     <p data-ng-show="!songs.length">No Songs</p>
     <table class="pure-table pure-table-horizontal songs-list songs-list-sortable" data-ng-show="songs.length" data-ng-controller="SongsCtrl">
       <thead>
@@ -113,7 +113,10 @@
           <td data-col="artist"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></td>
           <td data-col="size">{{song.get("humanSize")}}</td>
           <td data-col="modifiedMillis">{{song.get("modifiedDisplay")}}</td>
-          <td data-col="communityRating">{{rating.get("modifiedDisplay")}}</td>
+          <td data-col="communityRating">
+            <span>{{song.get("userRating")}}</span>
+            <span data-ng-include="'song-menu'"></span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -225,7 +228,7 @@
     <div class="song-menu">
       <span class="song-menu-item">
         +
-        <div class="song-menu-item-list" data-menu>
+        <div class="song-menu-item-list" data-rating>
         </div>
       </span>
     </div>
