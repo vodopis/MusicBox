@@ -56,7 +56,7 @@ angular
       if(!library.getMusicDirectory()) {
         $location.path("/settings");
       } else {
-        $location.path("/playlist/Queue");
+        $location.path("/songs");
         library.scanDropbox();
       }
     });
@@ -121,7 +121,7 @@ angular
           // For the first time login, redirect to Settings page to select their Music Directory.
           $location.path("/settings");
         } else {
-          $location.path("/playlist/Queue");
+          $location.path("/songs");
           library.scanDropbox();
         }
       }
@@ -313,14 +313,16 @@ angular
 // Songs
 .controller("SongsCtrl", ["$scope", "$http", "$window", "queue", "library", "notification",
     function($scope, $http, $window, queue, library, notification) {
-  $scope.predicate = "name"; // By default, sort by name.
+  $scope.predicate = "modifiedMillis";
+  $scope.sortReverse = true;
+
   $scope.play = function(songs, index) {
     queue.clear();
     queue.add(songs, index);
   };
 
+
   $scope.download = function(song) {
-      console.log("downloading: " + song.get("path") );
       for (var key in localStorage){
         if (key.indexOf("dropbox-auth") === 0) {
           var auth = JSON.parse(localStorage[key]);
@@ -365,6 +367,7 @@ angular
 // Playlists
 .controller("PlaylistCtrl", ["$scope", "$location", "$routeParams", "$window", "library", "queue",
     function($scope, $location, $routeParams, $window, library, queue) {
+      console.log("playlist controller called");
   $scope.songs = library.getPlaylist($routeParams.name);
   $scope.name = $routeParams.name;
 

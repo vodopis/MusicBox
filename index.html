@@ -2,7 +2,7 @@
 <html data-ng-app="app">
 <head>
   <meta charset=utf-8 />
-  <title>Ephob</title>
+  <title>EphobPlayer</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- build:css css/musicbox.css -->
   <link rel="stylesheet" href="css/pure-min.css">
@@ -13,7 +13,7 @@
 <body data-ng-controller="MainCtrl">
   <div class="main">
     <header data-ng-class="{'logged-in': dropbox.isLoggedIn()}">
-      <h1>Ephob</h1>
+      <a href="/#/songs"><h1>EphobPlayer</h1></a>
       <form class="pure-form search-form" data-ng-submit="search()">
         <input class="search-box" type="text" placeholder="Search music..." data-ng-model="query" data-ng-trim="false" />
       </form>
@@ -27,7 +27,7 @@
       </div>
     </header>
 
-    <nav class="pure-menu pure-menu-open" id="nav" data-ng-class="{'logged-in': dropbox.isLoggedIn()}">
+    <nav class="pure-menu pure-menu-open" id="nav" data-ng-show="false" data-ng-class="{'logged-in': dropbox.isLoggedIn()}">
       <ul data-active-link="active">
         <li><span class="pure-menu-heading">Library</span></li>
         <li><a href="#/artists">Artists</a></li>
@@ -40,7 +40,7 @@
     <div data-ng-view class="content">
       <div class="login">
         <img src="img/logo.png" />
-        <div class="title">Ephob</div>
+        <div class="title">EphobPlayer</div>
         <button class="pure-button ng-cloak" data-ng-click="login()">Login to Dropbox</button>
         <p data-ng-show="msg" class="ng-cloak">{{msg}}</p>
       </div>
@@ -82,26 +82,30 @@
     <table class="pure-table pure-table-horizontal songs-list songs-list-sortable" data-ng-show="songs.length" data-ng-controller="SongsCtrl">
       <thead>
         <tr>
-          <td data-col="name" data-ng-click="predicate='name'" data-ng-class="{selected: predicate=='name'}">
-            <span class="marker" data-ng-show="predicate=='name'">▼</span>
+          <td data-col="name" data-ng-click="predicate='name'; sortReverse=!sortReverse" data-ng-class="{selected: predicate=='name'}">
+            <span class="marker" data-ng-show="predicate=='name'">{{!sortReverse ? '▼' : '▲'}}</span>
             <span>Name</span>
           </td>
-          <td data-col="artist" data-ng-click="predicate='artist'" data-ng-class="{selected: predicate=='artist'}">
-            <span class="marker" data-ng-show="predicate=='artist'">▼</span>
+          <td data-col="artist" data-ng-click="predicate='artist'; sortReverse=!sortReverse" data-ng-class="{selected: predicate=='artist'}">
+            <span class="marker" data-ng-show="predicate=='artist'">{{!sortReverse ? '▼' : '▲'}}</span>
             <span>Artist</span>
           </td>
-          <td data-col="size" data-ng-click="predicate='size'" data-ng-class="{selected: predicate=='size'}">
-            <span class="marker" data-ng-show="predicate=='size'">▼</span>
+          <td data-col="size" data-ng-click="predicate='size'; sortReverse=!sortReverse" data-ng-class="{selected: predicate=='size'}">
+            <span class="marker" data-ng-show="predicate=='size'">{{!sortReverse ? '▼' : '▲'}}</span>
             <span>Size</span>
           </td>
-          <td data-col="modifiedMillis" data-ng-click="predicate='modifiedMillis'" data-ng-class="{selected: predicate=='modifiedMillis'}">
-            <span class="marker" data-ng-show="predicate=='modifiedMillis'">▼</span>
+          <td data-col="modifiedMillis" data-ng-click="predicate='modifiedMillis'; sortReverse=!sortReverse" data-ng-class="{selected: predicate=='modifiedMillis'}">
+            <span class="marker" data-ng-show="predicate=='modifiedMillis'">{{!sortReverse ? '▼' : '▲'}}</span>
             <span>Uploaded</span>
+          </td>
+          <td data-col="communityRating" data-ng-click="predicate='communityRating'; sortReverse=!sortReverse" data-ng-class="{selected: predicate=='communityRating'}">
+            <span class="marker" data-ng-show="predicate=='communityRating'">{{!sortReverse ? '▼' : '▲'}}</span>
+            <span>Rating</span>
           </td>
         </tr>
       </thead>
       <tbody>
-        <tr data-ng-repeat="song in (filteredSongs = (songs | orderObjectBy:predicate)) track by $index" data-ng-dblclick="play(filteredSongs, $index)">
+        <tr data-ng-repeat="song in (filteredSongs = (songs | orderObjectBy:predicate:sortReverse)) track by $index" data-ng-dblclick="play(filteredSongs, $index)">
           <td data-col="name">
             <span>{{song.get("name")}}<span>
             <span data-ng-click='download(song)'><img class="song-download" src="img/download.png"/></span>
@@ -109,6 +113,7 @@
           <td data-col="artist"><a href="#/artist/{{song.get('artist')}}">{{song.get("artist")}}</a></td>
           <td data-col="size">{{song.get("humanSize")}}</td>
           <td data-col="modifiedMillis">{{song.get("modifiedDisplay")}}</td>
+          <td data-col="communityRating">{{rating.get("modifiedDisplay")}}</td>
         </tr>
       </tbody>
     </table>
@@ -248,7 +253,7 @@
   <script type="text/ng-template" id="login">
     <div class="login">
       <img src="img/logo.png" />
-      <div class="title">Ephob</div>
+      <div class="title">EphobPlayer</div>
       <button class="pure-button" data-ng-click="login()">Login to Dropbox</button>
       <p data-ng-show="msg">{{msg}}</p>
     </div>
@@ -302,6 +307,7 @@
   <script src="js/lib/lastfm.min.js"></script>
   <script src="js/lib/id3.min.js"></script>
   <script src="js/lib/moment.js"></script>
+  <script src="https://cdn.firebase.com/js/client/2.2.4/firebase.js"></script>
   <script src="js/routes.js"></script>
   <script src="js/directives.js"></script>
   <script src="js/filters.js"></script>

@@ -22,5 +22,5 @@ angular
   .when("/genre/*genre", { templateUrl: "genres/show", controller: "GenresShowCtrl", resolve: resolveLibrary })
   .when("/playlist/*name", { templateUrl: "playlist", controller: "PlaylistCtrl", resolve: resolveLibrary })
   .when("/search/*query", { templateUrl: "search", controller: "SearchCtrl", resolve: resolveLibrary })
-  .otherwise({redirectTo: "/playlist/Queue"});
+  .otherwise({redirectTo: "/songs"});
 }]);
