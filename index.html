@@ -2,7 +2,7 @@
 <html data-ng-app="app">
 <head>
   <meta charset=utf-8 />
-  <title>EphobPlayer</title>
+  <title>EphobePlayer</title>
   <link rel="icon" type="image/png" href="img/favicon.png">
   <!-- build:css css/musicbox.css -->
   <link rel="stylesheet" href="css/pure-min.css">
@@ -13,7 +13,7 @@
 <body data-ng-controller="MainCtrl">
   <div class="main">
     <header data-ng-class="{'logged-in': dropbox.isLoggedIn()}">
-      <a href="/#/songs"><h1>EphobPlayer</h1></a>
+      <a href="/#/songs"><h1>EphobePlayer</h1></a>
       <form class="pure-form search-form" data-ng-submit="search()">
         <input class="search-box" type="text" placeholder="Search music..." data-ng-model="query" data-ng-trim="false" />
       </form>
@@ -40,7 +40,7 @@
     <div data-ng-view class="content">
       <div class="login">
         <img src="img/logo.png" />
-        <div class="title">EphobPlayer</div>
+        <div class="title">EphobePlayer</div>
         <button class="pure-button ng-cloak" data-ng-click="login()">Login to Dropbox</button>
         <p data-ng-show="msg" class="ng-cloak">{{msg}}</p>
       </div>
@@ -114,8 +114,22 @@
           <td data-col="size">{{song.get("humanSize")}}</td>
           <td data-col="modifiedMillis">{{song.get("modifiedDisplay")}}</td>
           <td data-col="communityRating">
-            <span>{{song.get("userRating")}}</span>
-            <span data-ng-include="'song-menu'"></span>
+            <span>{{song.get("communityRating") | rating}}</span>
+            <span>
+              <div class="song-menu">
+                <span class="song-menu-item">
+                  +
+                  <div class="song-menu-item-list">
+                    <select ng-model='userRating' ng-change='updateRating(song,userRating)'>
+                      <option value=''>--</option>
+                      <option  ng-repeat='o in [1,2,3,4,5]' ng-selected='{{o==song.get("userRating")}}' value='{{o}}'>
+                        {{o}}
+                      </option>
+                    </select>
+                  </div>
+                </span>
+              </div>
+            </span>
           </td>
         </tr>
       </tbody>
@@ -227,7 +241,7 @@
   <script type="text/ng-template" id="song-menu">
     <div class="song-menu">
       <span class="song-menu-item">
-        +
+        + {{$parent.song.name}}
         <div class="song-menu-item-list" data-rating>
         </div>
       </span>
@@ -256,7 +270,7 @@
   <script type="text/ng-template" id="login">
     <div class="login">
       <img src="img/logo.png" />
-      <div class="title">EphobPlayer</div>
+      <div class="title">EphobePlayer</div>
       <button class="pure-button" data-ng-click="login()">Login to Dropbox</button>
       <p data-ng-show="msg">{{msg}}</p>
     </div>

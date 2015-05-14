@@ -32,6 +32,18 @@ angular
     return input;
   };
 })
+.filter("rating", function() {
+  return function(input) {
+    if (angular.isUndefined(input) || input === null) return "--";
+
+    if (input % 1 != 0) {
+      return Number(input).toFixed(1);
+    }
+    else {
+      return input;
+    }
+  }
+})
 .filter("orderObjectBy", function() {
   return function(items, field, reverse) {
     var filtered = [];

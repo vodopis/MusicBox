@@ -34,10 +34,9 @@ angular
 .directive("rating", ["$rootScope", "library", function($rootScope, library) {
   return {
     restrict: "A",
-    template: "<select ng-model='rating'><option value=''>--</option><option ng-repeat='o in [1,2,3,4,5]' ng-selected='{{o==rating}}' value='{{o}}'>{{o}}</select>",
-    link: function($scope, $element, $attrs) {
+    template: "<select ng-model='userRating'><option value=''>--</option><option ng-repeat='o in [1,2,3,4,5]' ng-selected='{{o==song.rating}}' value='{{o}}'>{{o}}</select>",
 
-    }
+
   };
 }]);
 

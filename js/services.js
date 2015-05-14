@@ -75,23 +75,11 @@ angular
       tags.album = tags.album || "Unknown Album";
       tags.artist = tags.artist || "Unknown Artist";
       tags.genre = tags.genre || "Unknown Genre";
-      var image = tags.picture;
-      if (image) {
-        var base64String = "";
-        for (var i = 0; i < image.data.length; i++) {
-          base64String += String.fromCharCode(image.data[i]);
-        }
-        var base64 = "data:" + image.format + ";base64," + window.btoa(base64String);
-        console.log("base64: " +base64);
-      }
-      else {
-        console.log("No image found");
-      }
+
       // Songs
       var modifiedMillis = Date.parse(file.modifiedAt);
       var modifiedDate = new Date(modifiedMillis);
       var modifiedDisplay = moment(modifiedDate).format('YYYY-MM-DD');
-      console.log("modified: " + modifiedMillis + ", string: " + modifiedDisplay);
 
       var song = songs.insert({
         name: tags.title,
@@ -104,7 +92,7 @@ angular
         modifiedDisplay: modifiedDisplay,
         humanSize: file.humanSize,
         size: file.size,
-        userRating: 4.5
+        userRating: file.userRating
       });
 
       // Albums
