@@ -41,7 +41,7 @@ angular
 })
 
 // Library Service to build and manage the Music Library
-.service("library", ["$rootScope", "$q", "lastfm", "dropbox", "settings", "notification", 
+.service("library", ["$rootScope", "$q", "lastfm", "dropbox", "settings", "notification",
     function($rootScope, $q, lastfm, dropbox, settings, notification) {
 
   var datastore = false,
@@ -80,6 +80,8 @@ angular
       var modifiedMillis = Date.parse(file.modifiedAt);
       var modifiedDate = new Date(modifiedMillis);
       var modifiedDisplay = moment(modifiedDate).format('YYYY-MM-DD');
+      var userRating = (angular.isDefined(file.userRating) ? file.userRating : '');
+
 
       var song = songs.insert({
         name: tags.title,
@@ -92,7 +94,7 @@ angular
         modifiedDisplay: modifiedDisplay,
         humanSize: file.humanSize,
         size: file.size,
-        userRating: file.userRating
+        userRating: userRating
       });
 
       // Albums
@@ -146,12 +148,12 @@ angular
   }
 
   dropbox.datastoreLoaded.then(function(ds) {
-    window.ds = datastore = ds;
-    songs = datastore.getTable("songs");
-    artists = datastore.getTable("artists");
-    albums = datastore.getTable("albums");
-    genres = datastore.getTable("genres");
-    playlists = datastore.getTable("playlists");
+    window.dropboxDatastore = dropboxDatastore = ds;
+    songs = dropboxDatastore.getTable("songs");
+    artists = dropboxDatastore.getTable("artists");
+    albums = dropboxDatastore.getTable("albums");
+    genres = dropboxDatastore.getTable("genres");
+    playlists = dropboxDatastore.getTable("playlists");
     if(playlists.query().length === 0) playlists.insert({name: "Queue", songIds: []}); // If Queue playlist doesn't exist on first login, create it.
     $rootScope.$broadcast("datastore.loaded");
     deferred.resolve();
@@ -283,6 +285,7 @@ angular
           isScanning = false;
           cleanup(files);
         }
+        $rootScope.$broadcast("library.loaded");
 
       });
     },
@@ -308,10 +311,9 @@ angular
 
 // Dropbox Service
 .service("dropbox", ["$rootScope", "$q", "store", function($rootScope, $q, store) {
-  var client = new Dropbox.Client({ key: "4truhcywbbbxtul" }),
+    var client = new Dropbox.Client({ key: "0q06axvbo5kvsb1" }),
     deferredDatastore = $q.defer();
-
-  client.authDriver(new Dropbox.AuthDriver.Popup({
+    client.authDriver(new Dropbox.AuthDriver.Popup({
     receiverUrl: location.origin + location.pathname + "dropbox_receiver.html"
   }));
   client.authenticate({interactive: false}, function() {

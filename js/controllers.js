@@ -49,17 +49,20 @@ angular
         });
     }])
 
-    .controller("MainCtrl", ["$scope", "$location", "dropbox", "library", function ($scope, $location, dropbox, library) {
+    .controller("MainCtrl", ["$rootScope", "$scope", "$location", "dropbox", "library", function ($rootScope, $scope, $location, dropbox, library) {
         if (dropbox.isLoggedIn()) {
             document.body.classList.add("loading");
             $scope.$on("datastore.loaded", function () {
                 document.body.classList.remove("loading");
                 if (!library.getMusicDirectory()) {
-                    $location.path("/settings");
-                } else {
-                    $location.path("/songs");
-                    library.scanDropbox();
+                    library.set("library.musicdirectory", "/ephobe");
+
                 }
+                library.scanDropbox();
+            });
+            $scope.$on("library.loaded", function() {
+                $location.path("/songs");
+                $rootScope.$safeApply();
             });
         } else {
             $location.path("/login");
@@ -80,6 +83,8 @@ angular
         $scope.search = function () {
             $location.path("/search/" + $scope.query);
         };
+
+        $scope.fbRef = new Firebase("https://electrophobic.firebaseIO.com/songs/community-rating");
 
         $scope.$on("$routeChangeSuccess", function (e, current, previous) {
             if (current.loadedTemplateUrl === "search") {
@@ -132,10 +137,10 @@ angular
     }])
 
 // Logout
-    .controller("LogoutCtrl", ["$scope", "$location", "dropbox", function ($scope, $location, dropbox) {
+    .controller("LogoutCtrl", ["$rootScope", "$scope", "$location", "dropbox", function ($rootScope, $scope, $location, dropbox) {
         dropbox.logout(function () {
             $location.path("/login");
-            $scope.$safeApply();
+            $rootScope.$safeApply();
         });
     }])
 
@@ -315,12 +320,13 @@ angular
     .controller("SongsListCtrl", ["$scope", "library", function($scope, library) {
         $scope.songs = library.getSongs();
 
-        var fbRef = new Firebase("https://electrophobic.firebaseIO.com/songs/community-rating");
+
         angular.forEach($scope.songs, function(song) {
             var filteredSongPath = song.get('path').replace(/\.|\[|\]|\#|\$/g, '_');
-            fbRef.child(filteredSongPath).once('value', function (snap) {
+            $scope.fbRef.child(filteredSongPath).once('value', function (snap) {
                 var communityRating = snap.val();
                 if (! angular.isUndefined(communityRating) && communityRating !== null) {
+                    console.log("community rating exists for song: " + filteredSongPath + ", :: " + JSON.stringify(communityRating) );
                     song.set("communityRating", communityRating.rating);
                 }
             });
@@ -332,36 +338,43 @@ angular
             $scope.predicate = "modifiedMillis";
             $scope.sortReverse = true;
 
-            var fbRef = new Firebase("https://electrophobic.firebaseIO.com/songs/community-rating");
-
             $scope.updateRating = function (song, newUserRating) {
                 var oldUserRating = song.get("userRating");
-                if (newUserRating === oldUserRating) {
+
+                oldUserRating = parseInt(oldUserRating, 10);
+                newUserRating = parseInt(newUserRating, 10);
+
+                if (! angular.isUndefined(oldUserRating) && newUserRating == parseInt(oldUserRating)) {
+                    console.log("user ratings match");
                     return false;
                 }
 
                 var filteredSongPath = song.get('path').replace(/\.|\[|\]|\#|\$/g, '_');
-                fbRef.child(filteredSongPath).once('value', function (snap) {
+                $scope.fbRef.child(filteredSongPath).once('value', function (snap) {
                     var communityRating = snap.val();
-                    console.log("existing community rating: " + JSON.stringify(communityRating));
+                    //console.log("existing community rating: " + JSON.stringify(communityRating));
 
-                    if (angular.isUndefined(communityRating) || communityRating === null) {
+                    if (angular.isUndefined(communityRating) || communityRating == null) {
                         communityRating = {};
                         communityRating.rating = newUserRating;
                         communityRating.votes = 1;
                     }
                     else {
+                        communityRating.rating = parseFloat(communityRating.rating, 10);
+                        communityRating.votes = parseInt(communityRating.votes, 10);
+
                         var oldTotal = communityRating.rating * communityRating.votes;
-                        var newTotal = (oldUserRating === null) ? (oldTotal + newUserRating) : (oldTotal - oldUserRating + newUserRating);
-                        communityRating.votes = (oldUserRating === null) ? communityRating.votes + 1 : communityRating.votes;
+                        var newTotal = (angular.isUndefined(oldUserRating) || oldUserRating == null || !oldUserRating) ? (oldTotal + newUserRating) : (oldTotal - oldUserRating + newUserRating);
+
+                        communityRating.votes = (angular.isUndefined(oldUserRating) || oldUserRating == null || !oldUserRating) ? communityRating.votes + 1 : communityRating.votes;
                         communityRating.rating = newTotal / communityRating.votes;
 
                     }
                     // save to Firebase
                     console.log("saving rating to FB: " + JSON.stringify(communityRating));
-                    fbRef.child(filteredSongPath).set(communityRating);
+                    $scope.fbRef.child(filteredSongPath).set(communityRating);
 
-                    song.set("userRating", newUserRating);
+                    song.set("userRating", newUserRating.toString());
                     song.set("communityRating", communityRating.rating);
 
                     notification.message("Rating saved.");
